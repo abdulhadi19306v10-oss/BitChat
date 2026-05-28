@@ -119,16 +119,3 @@ python chat_client.py
 *   **Local Video Stream Resolution**: `320 x 180` (Downscaled to preserve bandwidth)
 *   **Remote Video Stream Resolution**: `854 x 480`
 
-lution**: `320 x 180` (Downscaled to preserve bandwidth)
-*   **Remote Video Stream Resolution**: `854 x 480`
-
----
-
-## 👥 Contributors
-
-| Name | Roll Number |
-| :--- | :--- |
-| **Abdul Hadi** | 2025(s)-SE-5 |
-| **Muhammad Irfan Shoukat** | 2025(s)-SE-4 |
-| **Bilal Ahmad** | 2025(s)-SE-23 |
-
