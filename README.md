@@ -86,3 +86,12 @@ flutter run -d windows
 # or
 flutter run
 ```
+
+### 3. Demo Accounts (Local Testing)
+If you have seeded the database locally using the provided script, you can log in immediately using any of the following accounts:
+
+| Username | Email | Password |
+| :--- | :--- | :--- |
+| **Alice** | `alice@cipher.com` | `password123` |
+| **Bob** | `bob@cipher.com` | `password123` |
+| **Charlie** | `charlie@cipher.com` | `password123` |
