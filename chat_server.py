@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-BitChat - Server
+Cipher - Server
 Real-time chat server with voice/video call media relay
 """
 
@@ -65,7 +65,7 @@ class ChatServer:
                 local_ip = "127.0.0.1"
             
             print("=" * 55)
-            print("            BITCHAT SERVER")
+            print("            CIPHER SERVER")
             print("=" * 55)
             print(f"  Local IP Address : {local_ip}")
             print(f"  Port             : {PORT}")
@@ -449,7 +449,7 @@ class ChatServer:
 
 
 if __name__ == '__main__':
-    print("\nStarting BitChat Server...\n")
+    print("\nStarting Cipher Server...\n")
     server = ChatServer()
     try:
         server.start()

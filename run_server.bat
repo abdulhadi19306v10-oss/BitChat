@@ -1,5 +1,5 @@
 @echo off
-title BitChat Server
-echo Starting BitChat Server...
+title Cipher Server
+echo Starting Cipher Server...
 python chat_server.py
 pause

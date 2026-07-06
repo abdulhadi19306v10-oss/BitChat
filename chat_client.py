@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-BitChat - Client
+Cipher - Client
 Real-time chat with voice/video calls using pyaudio and opencv
 """
 
@@ -114,7 +114,7 @@ class ChatClient:
         
     def setup_gui(self):
         self.root = tk.Tk()
-        self.root.title("BitChat")
+        self.root.title("Cipher")
         self.root.geometry("1000x700")
         self.root.minsize(800, 600)
         self.root.configure(bg=self.theme['bg'])
@@ -130,7 +130,7 @@ class ChatClient:
         self.login_frame.place(relx=0.5, rely=0.5, anchor='center')
         
         # Simple wordmark logo for app branding.
-        tk.Label(self.login_frame, text="BitChat", font=('Segoe UI', 30, 'bold'),
+        tk.Label(self.login_frame, text="Cipher", font=('Segoe UI', 30, 'bold'),
                  bg=self.theme['bg'], fg=self.theme['accent']).pack(pady=(0, 30))
         tk.Label(self.login_frame, text="Fast local messaging and calls", font=('Segoe UI', 10),
                  bg=self.theme['bg'], fg=self.theme['text2']).pack(pady=(0, 16))
@@ -459,7 +459,7 @@ class ChatClient:
     def show_notification(self, title: str, message: str):
         if win11toast:
             try:
-                threading.Thread(target=win11toast.toast, args=(title, message), kwargs={'app_id': 'BitChat'}, daemon=True).start()
+                threading.Thread(target=win11toast.toast, args=(title, message), kwargs={'app_id': 'Cipher'}, daemon=True).start()
             except:
                 self.root.after(0, lambda: self._show_toast(title, message))
         else:
@@ -682,7 +682,7 @@ class ChatClient:
         welcome = tk.Frame(self.chat_panel, bg=self.theme['bg'])
         welcome.place(relx=0.5, rely=0.5, anchor='center')
         
-        tk.Label(welcome, text="BitChat", font=('Segoe UI', 34, 'bold'),
+        tk.Label(welcome, text="Cipher", font=('Segoe UI', 34, 'bold'),
                  bg=self.theme['bg'], fg=self.theme['accent']).pack()
         tk.Label(welcome, text="Select a chat to start messaging", font=('Segoe UI', 12),
                  bg=self.theme['bg'], fg=self.theme['text2']).pack(pady=10)
@@ -1151,7 +1151,7 @@ class ChatClient:
         self.call_btn_frame = None
 
         self.call_dialog = tk.Toplevel(self.root)
-        self.call_dialog.title(f"BitChat - {call_type.title()} Call")
+        self.call_dialog.title(f"Cipher - {call_type.title()} Call")
         self.call_dialog.geometry(self.call_window_video_size if call_type == 'video' else self.call_window_voice_size)
         if call_type == 'video':
             self.call_dialog.minsize(*self.call_window_video_min)

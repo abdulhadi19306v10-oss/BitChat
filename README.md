@@ -1,6 +1,6 @@
-# 💬 BitChat - Real-Time Chat & VoIP Calling System
+# 💬 Cipher - Real-Time Chat & VoIP Calling System
 
-BitChat is a premium, lightweight real-time communication application built from the ground up in Python using raw sockets and Tkinter. It implements custom multi-threaded TCP protocols for state management, messaging, and call handshakes, alongside high-performance UDP media relays for low-latency voice and video calls.
+Cipher is a premium, lightweight real-time communication application built from the ground up in Python using raw sockets and Tkinter. It implements custom multi-threaded TCP protocols for state management, messaging, and call handshakes, alongside high-performance UDP media relays for low-latency voice and video calls.
 
 ---
 
@@ -28,11 +28,11 @@ BitChat is a premium, lightweight real-time communication application built from
 
 ## 🏗️ Architecture & Protocol Design
 
-BitChat utilizes a hybrid TCP/UDP architecture to balance reliability and speed:
+Cipher utilizes a hybrid TCP/UDP architecture to balance reliability and speed:
 
 ```
                   ┌──────────────────────────────┐
-                  │        BitChat Server        │
+                  │        Cipher Server        │
                   │  (HOST: 0.0.0.0, PORT: 5000) │
                   └──────────────┬───────────────┘
                                  │
@@ -48,7 +48,7 @@ BitChat utilizes a hybrid TCP/UDP architecture to balance reliability and speed:
 ```
 
 ### 1. TCP Message Framing Protocol
-To prevent TCP stream fragmentation (where multiple messages merge or split over the network buffer), BitChat uses a custom message framing mechanism:
+To prevent TCP stream fragmentation (where multiple messages merge or split over the network buffer), Cipher uses a custom message framing mechanism:
 *   **Header**: A 4-byte big-endian unsigned integer indicating the length of the payload.
 *   **Payload**: A JSON-encoded dictionary representing the message type and contents.
 
@@ -68,7 +68,7 @@ Here are the key files inside the project workspace:
 *   📁 **[chat_client.py](file:///c:/Users/Abdul%20Hadi/Desktop/Uni%20projects/CN/CN%20project/chat_client.py)**: The desktop client containing the Tkinter GUI, pyaudio recording/playback loop, and opencv camera capture thread.
 *   📁 **[requirements.txt](file:///c:/Users/Abdul%20Hadi/Desktop/Uni%20projects/CN/CN%20project/requirements.txt)**: List of third-party python dependencies for audio, video, image rendering, and notifications.
 *   📁 **[.gitignore](file:///c:/Users/Abdul%20Hadi/Desktop/Uni%20projects/CN/CN%20project/.gitignore)**: Standard Git configuration for ignoring temporary local files, cache, and server databases.
-*   📁 **[run_server.bat](file:///c:/Users/Abdul%20Hadi/Desktop/Uni%20projects/CN/CN%20project/run_server.bat)**: Shortcut batch script to boot up the BitChat server on Windows.
+*   📁 **[run_server.bat](file:///c:/Users/Abdul%20Hadi/Desktop/Uni%20projects/CN/CN%20project/run_server.bat)**: Shortcut batch script to boot up the Cipher server on Windows.
 *   📁 **[run_client.bat](file:///c:/Users/Abdul%20Hadi/Desktop/Uni%20projects/CN/CN%20project/run_client.bat)**: Shortcut batch script to launch a client window on Windows.
 
 ---
