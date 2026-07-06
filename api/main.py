@@ -1,0 +1,131 @@
+from fastapi import FastAPI, Depends, HTTPException, Request, status
+from sqlalchemy.orm import Session
+from pydantic import BaseModel, EmailStr
+from passlib.context import CryptContext
+import uuid
+from typing import List, Optional
+import time
+
+from . import models, database
+
+models.Base.metadata.create_all(bind=database.engine)
+
+app = FastAPI(title="Cipher API", description="Backend authentication and matching for Cipher App")
+
+import bcrypt
+
+# Pydantic Schemas
+class UserCreate(BaseModel):
+    username: str
+    email: EmailStr
+    password: str
+    device_fingerprint: str = "unknown"
+
+class UserResponse(BaseModel):
+    id: int
+    username: str
+    email: str
+    qr_code_string: str
+    
+    class Config:
+        from_attributes = True # Fixed V2 pydantic warning
+
+class LoginRequest(BaseModel):
+    email: EmailStr
+    password: str
+
+# Simple In-Memory Rate Limiter for IPs (to prevent basic alt-spam)
+ip_registration_tracker = {}
+RATE_LIMIT_SECONDS = 3600 # 1 hour between registrations per IP
+
+def get_password_hash(password: str) -> str:
+    salt = bcrypt.gensalt()
+    hashed = bcrypt.hashpw(password.encode('utf-8'), salt)
+    return hashed.decode('utf-8')
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    return bcrypt.checkpw(plain_password.encode('utf-8'), hashed_password.encode('utf-8'))
+
+def check_rate_limit(ip_address: str):
+    current_time = time.time()
+    if ip_address in ip_registration_tracker:
+        last_reg_time = ip_registration_tracker[ip_address]
+        if current_time - last_reg_time < RATE_LIMIT_SECONDS:
+            raise HTTPException(
+                status_code=429, 
+                detail="Too many registrations from this IP. Anti-alt measure active."
+            )
+    ip_registration_tracker[ip_address] = current_time
+
+@app.post("/api/register", response_model=UserResponse)
+def register(user: UserCreate, request: Request, db: Session = Depends(database.get_db)):
+    client_ip = request.client.host if request.client else "127.0.0.1"
+    
+    # 1. Check Rate Limit (Anti-Alt)
+    check_rate_limit(client_ip)
+    
+    # 2. Check if Email or Username exists
+    db_user = db.query(models.User).filter(
+        (models.User.email == user.email) | (models.User.username == user.username)
+    ).first()
+    if db_user:
+        raise HTTPException(status_code=400, detail="Email or username already registered")
+        
+    # 3. Check Device Fingerprint (Basic Anti-Alt)
+    db_device = db.query(models.User).filter(models.User.device_fingerprint == user.device_fingerprint).first()
+    if db_device and user.device_fingerprint != "unknown":
+         # Just a warning or strict block depending on settings. For now, strict block.
+         raise HTTPException(status_code=403, detail="Device already associated with an account. Anti-alt measure active.")
+
+    # 4. Generate unique QR string
+    qr_string = f"cipher-qr-{uuid.uuid4().hex[:12]}"
+    
+    hashed_password = get_password_hash(user.password)
+    new_user = models.User(
+        username=user.username,
+        email=user.email,
+        hashed_password=hashed_password,
+        qr_code_string=qr_string,
+        registered_ip=client_ip,
+        device_fingerprint=user.device_fingerprint
+    )
+    
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    return new_user
+
+@app.post("/api/login", response_model=UserResponse)
+def login(creds: LoginRequest, db: Session = Depends(database.get_db)):
+    user = db.query(models.User).filter(models.User.email == creds.email).first()
+    if not user or not verify_password(creds.password, user.hashed_password):
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+    return user
+
+@app.post("/api/add_friend")
+def add_friend(user_id: int, target_identifier: str, by_qr: bool = False, db: Session = Depends(database.get_db)):
+    # target_identifier can be a username or a QR code string
+    if by_qr:
+        target_user = db.query(models.User).filter(models.User.qr_code_string == target_identifier).first()
+    else:
+        target_user = db.query(models.User).filter(models.User.username == target_identifier).first()
+        
+    if not target_user:
+        raise HTTPException(status_code=404, detail="User not found")
+        
+    if target_user.id == user_id:
+        raise HTTPException(status_code=400, detail="Cannot add yourself")
+        
+    # Check existing friendship
+    existing = db.query(models.Friendship).filter(
+        models.Friendship.user_id == user_id, 
+        models.Friendship.friend_id == target_user.id
+    ).first()
+    
+    if existing:
+        raise HTTPException(status_code=400, detail="Friendship or request already exists")
+        
+    new_friendship = models.Friendship(user_id=user_id, friend_id=target_user.id, status="pending")
+    db.add(new_friendship)
+    db.commit()
+    return {"message": f"Friend request sent to {target_user.username}"}
